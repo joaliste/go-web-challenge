@@ -102,6 +102,7 @@ func (a *ApplicationDefault) SetUp() (err error) {
 	})
 
 	(*a).rt.Get("/ticket/getByCountry/{destination}", hd.GetTicketByDestinationCountry())
+	(*a).rt.Get("/ticket/getAverage/{destination}", hd.GetTicketAverageByDestinationCountry())
 
 	return
 }

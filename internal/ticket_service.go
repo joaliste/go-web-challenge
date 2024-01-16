@@ -6,6 +6,7 @@ type TicketService interface {
 
 	// GetTicketsAmountByDestinationCountry returns the amount of tickets filtered by destination country
 	GetTicketByDestinationCountry(country string) (int, error)
+	GetTicketAverageByDestinationCountry(country string) (float64, error)
 
 	// GetPercentageTicketsByDestinationCountry returns the percentage of tickets filtered by destination country
 	// ...

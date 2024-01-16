@@ -47,3 +47,20 @@ func (r *RepositoryTicketMap) GetTicketByDestinationCountry(country string) map[
 
 	return t
 }
+
+func (r *RepositoryTicketMap) GetTicketAverageByDestinationCountry(country string) (float64, error) {
+	// create a copy of the map
+	count := 0
+	for _, v := range r.db {
+		if v.Country == country {
+			count++
+		}
+	}
+
+	if count == 0 {
+		err := internal.ErrCountryNotFound
+		return 0, err
+	}
+
+	return float64(count) / float64(r.lastId) * 100.0, nil
+}

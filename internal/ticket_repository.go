@@ -13,4 +13,5 @@ type TicketRepository interface {
 
 	// GetTicketByDestinationCountry returns the tickets filtered by destination country
 	GetTicketByDestinationCountry(country string) map[int]TicketAttributes
+	GetTicketAverageByDestinationCountry(country string) (float64, error)
 }

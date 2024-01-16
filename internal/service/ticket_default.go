@@ -31,3 +31,9 @@ func (s *ServiceTicketDefault) GetTicketByDestinationCountry(country string) (in
 
 	return len(data), err
 }
+
+func (s *ServiceTicketDefault) GetTicketAverageByDestinationCountry(country string) (float64, error) {
+	percentage, err := s.rp.GetTicketAverageByDestinationCountry(country)
+
+	return percentage, err
+}
