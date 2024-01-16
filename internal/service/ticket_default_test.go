@@ -1,6 +1,9 @@
 package service_test
 
 import (
+	"app/internal"
+	"app/internal/repository"
+	"app/internal/service"
 	"testing"
 
 	"github.com/stretchr/testify/require"

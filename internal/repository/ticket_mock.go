@@ -1,6 +1,9 @@
 package repository
 
-import "context"
+import (
+	"app/internal"
+	"context"
+)
 
 // NewRepositoryTicketMock creates a new repository for tickets in a map
 func NewRepositoryTicketMock() *RepositoryTicketMap {

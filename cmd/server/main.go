@@ -1,6 +1,9 @@
 package main
 
 import (
+	"app/internal/handlers"
+	"app/internal/repository"
+	"app/internal/service"
 	"fmt"
 	"net/http"
 	"os"
@@ -49,7 +52,7 @@ func NewApplicationDefault(cfg *ConfigAppDefault) *ApplicationDefault {
 	defaultRouter := chi.NewRouter()
 	defaultConfig := &ConfigAppDefault{
 		ServerAddr: ":8080",
-		DbFile:     "",
+		DbFile:     "tickets.csv",
 	}
 	if cfg != nil {
 		if cfg.ServerAddr != "" {
@@ -58,7 +61,7 @@ func NewApplicationDefault(cfg *ConfigAppDefault) *ApplicationDefault {
 		if cfg.DbFile != "" {
 			defaultConfig.DbFile = cfg.DbFile
 		}
-	}			
+	}
 
 	return &ApplicationDefault{
 		rt:         defaultRouter,
@@ -66,7 +69,6 @@ func NewApplicationDefault(cfg *ConfigAppDefault) *ApplicationDefault {
 		dbFile:     defaultConfig.DbFile,
 	}
 }
-
 
 // ApplicationDefault represents the default application
 type ApplicationDefault struct {
@@ -78,17 +80,19 @@ type ApplicationDefault struct {
 	dbFile string
 }
 
-
 // SetUp sets up the application
 func (a *ApplicationDefault) SetUp() (err error) {
 	// dependencies
-	db, err := loader.NewLoaderTicketCSV(a.dbFile)
+	loader := repository.NewLoaderTicketCSV(a.dbFile)
+	db, err := loader.Load()
 	if err != nil {
 		return
 	}
-	rp := repository.NewRepositoryTicketMap(db)
+	rp := repository.NewRepositoryTicketMap(db, len(db))
 	// service ...
+	sv := service.NewServiceTicketDefault(rp)
 	// handler ...
+	hd := handlers.NewDefaultTickets(sv)
 
 	// routes
 	(*a).rt.Get("/health", func(w http.ResponseWriter, r *http.Request) {
@@ -96,12 +100,15 @@ func (a *ApplicationDefault) SetUp() (err error) {
 		w.Header().Set("Content-Type", "text/plain")
 		w.Write([]byte("OK"))
 	})
-	
+
+	(*a).rt.Get("/ticket/getByCountry/{destination}", hd.GetTicketByDestinationCountry())
+
 	return
 }
 
 // Run runs the application
 func (a *ApplicationDefault) Run() (err error) {
+	fmt.Println("server is running...")
 	err = http.ListenAndServe(a.serverAddr, a.rt)
 	return
 }
